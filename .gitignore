@@ -1,0 +1,9 @@
+# Compiled class file
+*.class
+.idea
+*target/
+*.iml
+*log/
+*.log
+*.xml
+*.txt
