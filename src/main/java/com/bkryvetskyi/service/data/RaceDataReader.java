@@ -61,10 +61,30 @@ public class RaceDataReader implements DataReader {
         return lapTimes;
     }
 
-
+    /**
+     * Reads a list of racers from an input file.
+     * @param fileName The filename of the input file containing racer information.
+     * @return A list of Racer objects representing the racers' data.
+     */
     public List<Racer> readRacersFromFile(String fileName) {
         List<Racer> racers = new ArrayList<>();
 
+        try (BufferedReader reader = new BufferedReader(new FileReader (fileName))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Splitting the line into abbreviation, name and team.
+                String[] parts = line.split("_");
+                if (parts.length >= 3) {
+                    String abbreviation = parts[0];
+                    String racerName = parts[1];
+                    String team = parts[2];
+                    Racer racer = new Racer(abbreviation, racerName, team);
+                    racers.add(racer);
+                }
+            }
+        } catch (IOException e) {
+            LOGGER.warning("File read error! " + e.getMessage());
+        }
 
         return racers;
     }
