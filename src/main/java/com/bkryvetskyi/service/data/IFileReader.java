@@ -1,11 +1,15 @@
 package com.bkryvetskyi.service.data;
 
-import com.bkryvetskyi.model.LapTime;
-import com.bkryvetskyi.model.Racer;
-
 import java.util.List;
 
-public interface DataReader {
-    List<LapTime> readLapTimes(List<Racer> racers, String startLogFileName, String endLogFileName);
-    List<Racer> readRacersFromFile(String fileName);
+/**
+ * An interface representing a file reader, providing methods to read lines from a file.
+ */
+public interface IFileReader {
+    /**
+     * Reads lines from the given file and returns them as a List of Strings.
+     * @param fileName The name of the file to read.
+     * @return A List of strings containing the lines read from the file.
+     */
+    List<String> readFileLines(String fileName);
 }
