@@ -2,17 +2,14 @@ package com.bkryvetskyi;
 
 import com.bkryvetskyi.model.LapTime;
 import com.bkryvetskyi.model.Racer;
-import com.bkryvetskyi.service.data.DataReader;
-import com.bkryvetskyi.service.calculation.LapTimeUtils;
-import com.bkryvetskyi.service.data.RaceDataReader;
-
-import java.util.Comparator;
+import com.bkryvetskyi.service.BestLapTimeSort;
 import java.util.List;
 
 import com.bkryvetskyi.service.formatting.ResultFormatter;
+import com.bkryvetskyi.service.parser.LapTimeParser;
+import com.bkryvetskyi.service.parser.RacersParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.util.stream.Collectors;
 
 /**
  * The Application class is the entry point for the racing application.
@@ -32,9 +29,9 @@ public class Application {
      */
     private static void run() {
         ResultFormatter resultFormatter = new ResultFormatter();
-        DataReader daraReader = new RaceDataReader();
-        List<LapTime> lapTimes = loadRacerData(daraReader);
-        List<LapTime> bestLapTimes = sortBestLapTimes(lapTimes);
+        BestLapTimeSort sort = new BestLapTimeSort();
+        List<LapTime> lapTimes = loadRacerData();
+        List<LapTime> bestLapTimes = sort.sortBestLapTimes(lapTimes);
         String formattedResults = resultFormatter.formatResults(bestLapTimes);
 
         LOGGER.info(formattedResults);
@@ -42,27 +39,13 @@ public class Application {
 
     /**
      * Loads racer data from input files.
-     * @param 'dataReader' The data reader to use for loading data.
      * @return A list of lap times.
      */
-    private static List<LapTime> loadRacerData(DataReader daraReader) {
+    private static List<LapTime> loadRacerData() {
+        RacersParser racersParser = new RacersParser();
+        LapTimeParser lapTimeParser = new LapTimeParser();
+        List<Racer> racers = racersParser.parseRacers(RACERS_FILE_NAME);
 
-        List<Racer> racers = daraReader.readRacersFromFile(RACERS_FILE_NAME);
-
-        return daraReader.readLapTimes(racers, START_LOG_FILE_NAME, END_LOG_FILE_NAME);
-    }
-
-    /**
-     * Sorts the best lap times in ascending order.
-     * @param lapTimes The list of lap times to sort.
-     * @return A sorted list of best lap times.
-     */
-    private static List<LapTime> sortBestLapTimes(List<LapTime> lapTimes) {
-        LapTimeUtils timeUtils = new LapTimeUtils();
-        List<LapTime> bestLapTimes = timeUtils.getBestLapTime(lapTimes);
-
-        return bestLapTimes.stream()
-                .sorted(Comparator.comparing(LapTime::getLapDuration))
-                .collect(Collectors.toList());
+        return lapTimeParser.parserLapTimes(racers, START_LOG_FILE_NAME, END_LOG_FILE_NAME);
     }
 }
