@@ -15,11 +15,23 @@ public class Racer {
         return abbreviation;
     }
 
+    public void setAbbreviation(String abbreviation) {
+        this.abbreviation = abbreviation;
+    }
+
     public String getRacerName() {
         return racerName;
     }
 
+    public void setRacerName(String racerName) {
+        this.racerName = racerName;
+    }
+
     public String getTeam() {
         return team;
+    }
+
+    public void setTeam(String team) {
+        this.team = team;
     }
 }

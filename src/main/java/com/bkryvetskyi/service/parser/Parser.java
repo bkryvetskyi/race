@@ -1,57 +1,76 @@
 package com.bkryvetskyi.service.parser;
 
-import com.bkryvetskyi.Application;
+import com.bkryvetskyi.model.LapTime;
 import com.bkryvetskyi.model.Racer;
-import com.bkryvetskyi.service.data.DataFileReader;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.List;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
+
+import static java.util.stream.Collectors.toList;
+
 
 public class Parser {
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss.SSS");
     private static final Logger LOGGER = LogManager.getLogger(Parser.class);
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss.SSS");
+    private static final String UNDERLINE = "_";
 
-    /**
-     * Parses the information of racers from a file containing racer data.
-     * @param fileName The name of the file containing racer information.
-     * @return A list of Racer objects parsed from the file.
-     */
-
-    public List<Racer> parseRacers(String fileName) {
-        List<Racer> racers = new ArrayList<>();
-
-        DataFileReader dataFileReader = new DataFileReader();
-        List<String> lines = dataFileReader.readFileLines(fileName);
-
-        lines.forEach(line -> {
-            String[] parts = line.split("_");
-            if (parts.length >= 3) {
-                String abbreviation = parts[0];
-                String racerName = parts[1];
-                String team = parts[2];
-                Racer racer = new Racer(abbreviation, racerName, team);
-                racers.add(racer);
-            }
-        });
-
-        return racers;
+    public List<LapTime> parseDateTimes(List<String> dateTimeString) {
+        return dateTimeString.stream()
+                .map(this::parseDataTime)
+                .filter(Objects::nonNull)
+                .collect(toList());
     }
 
-    public LocalDateTime parserDataTime(String dataTimeString) {
-        if (isValidFormat(dataTimeString)) {
-            return LocalDateTime.parse(dataTimeString, FORMATTER);
+    public LapTime parseDataTime(String dateTimeString) {
+        if (isValidFormat(dateTimeString)) {
+            String abbreviation = dateTimeString.substring(0, 3);
+            LocalDateTime dateTime = LocalDateTime.parse(dateTimeString.substring(3), FORMATTER);
+
+            return new LapTime(new Racer(abbreviation, null, null), dateTime);
         } else {
-            LOGGER.error("The format is not valid, " + dataTimeString);
+            LOGGER.error("The format is not valid, {}", dateTimeString);
+
             return null;
         }
     }
 
-    private boolean isValidFormat(String dataTimeString) {
+    public List<Racer> parseRacers(List<String> racerString) {
+        return racerString.stream()
+                .filter(this::isValidLine)
+                .map(line -> line.split(UNDERLINE))
+                .filter(this::isValidParts)
+                .map(parts -> new Racer(parts[0], parts[1], parts[2]))
+                .collect(toList());
+    }
+
+    private boolean isValidLine(String line) {
+        boolean isValid = !StringUtils.isEmpty(line);
+
+        if (!isValid)
+            LOGGER.error("Invalid line: {}", line);
+
+        return isValid;
+    }
+
+    private boolean isValidParts(String[] parts) {
+        boolean isValid = parts.length >= 3 &&
+                StringUtils.isNotBlank(parts[0]) &&
+                StringUtils.isNotBlank(parts[1]) &&
+                StringUtils.isNotBlank(parts[2]);
+
+        if (!isValid)
+            LOGGER.error("Invalid parts: {}", StringUtils.join(parts, ", "));
+
+        return isValid;
+    }
+
+    private boolean isValidFormat(String dateTimeString) {
         String regex = "[A-Z]{3}\\d{4}-\\d{2}-\\d{2}_\\d{2}:\\d{2}:\\d{2}.\\d{3}";
-        return dataTimeString.matches(regex);
+        return dateTimeString.matches(regex);
     }
 }

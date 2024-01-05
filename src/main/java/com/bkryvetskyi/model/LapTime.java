@@ -5,18 +5,28 @@ import java.time.LocalDateTime;
 
 public class LapTime {
     private Racer racer;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private LocalDateTime dateTime;
     private Duration lapDuration;
 
-    public LapTime(Racer racer, LocalDateTime startTime, LocalDateTime endTime, Duration lapDuration) {
+    public LapTime(Racer racer, LocalDateTime dateTime) {
         this.racer = racer;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.dateTime = dateTime;
+    }
+
+    public LapTime(Racer racer, Duration lapDuration) {
+        this.racer = racer;
         this.lapDuration = lapDuration;
     }
 
-    public String getLapDuration() {
+    public Racer getRacer() {
+        return racer;
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
+
+    public final String getLapDuration() {
         long hours = Math.abs(lapDuration.toHours());
         long minutes = Math.abs(lapDuration.toMinutes() % 60);
         long second = Math.abs(lapDuration.getSeconds() % 60);
@@ -26,17 +36,5 @@ public class LapTime {
             return String.format("%02d:%02d.%03d", minutes, second, milliseconds);
         else
             return String.format("%02d:%02d:%02d.%03d", hours, minutes, second, milliseconds);
-    }
-
-    public Racer getRacer() {
-        return racer;
-    }
-
-    public LocalDateTime getStartTime() {
-        return startTime;
-    }
-
-    public LocalDateTime getEndTime() {
-        return endTime;
     }
 }
