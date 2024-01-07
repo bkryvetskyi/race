@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class LapTime {
-    private Racer racer;
+    private final Racer racer;
     private LocalDateTime dateTime;
     private Duration lapDuration;
 

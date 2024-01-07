@@ -4,9 +4,8 @@ import com.bkryvetskyi.model.LapTime;
 import com.bkryvetskyi.model.Racer;
 import com.bkryvetskyi.service.ReportProcessor;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.List;
+
 import com.bkryvetskyi.service.data.DataFileReader;
 import com.bkryvetskyi.service.formatting.ResultFormatter;
 import com.bkryvetskyi.service.parser.Parser;
@@ -45,40 +44,12 @@ public class Application {
         List<LapTime> startLapTimes = parser.parseDateTimes(startLinesLapTime);
         List<LapTime> endLapTimes = parser.parseDateTimes(endLinesLapTime);
 
-        List<LapTime> sortedStartListByAbbreviation = reportProcessor.sortLapTimesByAbbreviation(startLapTimes);
-        List<LapTime> sortEndListByAbbreviation = reportProcessor.sortLapTimesByAbbreviation(endLapTimes);
-
         List<LapTime> findLapDurationStartAndEndLapTimes =
-                reportProcessor.lapDurationTime(sortedStartListByAbbreviation, sortEndListByAbbreviation);
-
-        List<LapTime> out = reportProcessor.findRacerByAbbreviation(racers, findLapDurationStartAndEndLapTimes);
-        for (LapTime lapTime : out) {
-            String abr = lapTime.getRacer().getAbbreviation();
-            String name = lapTime.getRacer().getRacerName();
-            String team = lapTime.getRacer().getTeam();
-            String duration = lapTime.getLapDuration();
-            LOGGER.info("{} {} {} {}", abr, name, team, duration);
-        }
-
-        /*        for (LapTime lapTime : out) {
-            String abr = lapTime.getRacer().getAbbreviation();
-            String name = lapTime.getRacer().getRacerName();
-            String team = lapTime.getRacer().getTeam();
-            String time = lapTime.getLapDuration();
-            LOGGER.info("{} {} {} {}", abr, name, team, time);
-        }
-
-        List<LapTime> sortedListWithRacerAndLapDuration = reportProcessor.sortedByLaDuration(out);
-        for (LapTime lapTime : sortedListWithRacerAndLapDuration) {
-            String abr = lapTime.getRacer().getAbbreviation();
-            String name = lapTime.getRacer().getRacerName();
-            String team = lapTime.getRacer().getTeam();
-            String time = lapTime.getLapDuration();
-            LOGGER.info("{} {} {} {}", abr, name, team, time);
-        }
+                reportProcessor.lapDurationTime(racers, startLapTimes, endLapTimes);
+        List<LapTime> sortedRacerByLapDuration = reportProcessor.sortByLaDuration(findLapDurationStartAndEndLapTimes);
 
         ResultFormatter resultFormatter = new ResultFormatter();
-        String formattedResult = resultFormatter.formatResults(sortedListWithRacerAndLapDuration);
-        LOGGER.info(formattedResult);*/
+        String formattedResult = resultFormatter.formatResults(sortedRacerByLapDuration);
+        LOGGER.info(formattedResult);
     }
 }

@@ -13,7 +13,7 @@ public class ResultFormatter {
      * @param bestLapTimes The list of best lap times to be formatted.
      * @return A formatted string representation of the best lap times.
      */
-/*    public String formatResults(List<LapTime> bestLapTimes) {
+    public String formatResults(List<LapTime> bestLapTimes) {
         StringBuilder stringBuilder = new StringBuilder();
         int i = 0;
         for (LapTime lapTime : bestLapTimes) {
@@ -21,7 +21,7 @@ public class ResultFormatter {
             String team = lapTime.getRacer().getTeam();
             String lapDuration = lapTime.getLapDuration();
             i++;
-            String formattedLine = String.format("%-2s. %-20s | %-30s | %s", i,
+            String formattedLine = String.format("|%2d.|  %-20s |  %-30s | %s |", i,
                     racerName, team, lapDuration);
             stringBuilder.append(formattedLine).append(System.lineSeparator());
 
@@ -31,5 +31,5 @@ public class ResultFormatter {
         }
 
         return stringBuilder.toString();
-    }*/
+    }
 }
