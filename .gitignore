@@ -4,6 +4,4 @@
 *target/
 *.iml
 *log/
-*.log
 *.xml
-*.txt
