@@ -33,9 +33,7 @@ public class Parser {
 
             return new LapTime(new Racer(abbreviation, null, null), dateTime);
         } else {
-            LOGGER.error("The format is not valid, {}", dateTimeString);
-
-            return null;
+            throw new IllegalArgumentException("The format is not valid " + dateTimeString);
         }
     }
 
